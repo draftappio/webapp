@@ -22,7 +22,7 @@
             <div class="scroller">
               <ul class="items-spaced">
                 <li ng-repeat="artBoard in notesVm.project.artboards">
-                  <a href="/projects/{{project.id}}/{{project.slug}}/{{artBoard.id}}/notes" ng-click="notesVm.project.selectArtBoard(artBoard)">
+                  <a ui-sref="notes({id: project.id, slug: project.slug, artboardId: artBoard.id})" ng-click="notesVm.project.selectArtBoard(artBoard)">
                     <img
                       class="thumbnail"
                       ng-class="{'is-active': artBoard.id === notesVm.selectedArtBoard.obj.id}"

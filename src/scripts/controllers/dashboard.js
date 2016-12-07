@@ -3,7 +3,7 @@
     .module("app")
     .controller("DasboardCtrl", DasboardCtrl);
 
-  function DasboardCtrl($scope, $http, $timeout, $stateParams, $location, projectService, CacheFactory, toastr, toastrConfig, ENV) {
+  function DasboardCtrl($scope, $http, $timeout, $stateParams, $location, projectService, CacheFactory, toastr, toastrConfig, ENV, $state) {
 
     angular.extend(toastrConfig, {
       target: '.canvas-screen-viewer'
@@ -655,7 +655,12 @@
     function selectArtBoard(artBoard) {
       unselectLayer();
       vm.selectedArtBoard.obj = artBoard;
-      $location.path("/projects/" + $stateParams.id + "/" + $stateParams.slug + "/"+ artBoard.id + "/inspect");
+
+      $state.go("dashboard", {
+        id: $stateParams.id,
+        slug: $stateParams.slug,
+        artboardId: artBoard.id
+      }, { reload: true });
     }
 
     function selectSlice(layer) {

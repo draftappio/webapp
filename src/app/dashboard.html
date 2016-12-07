@@ -33,7 +33,7 @@
             <div class="scroller">
               <ul class="items-spaced">
                 <li ng-repeat="artBoard in dashboardVm.project.artboards" ng-show="activetab === 'boards'">
-                  <a href="/projects/{{project.id}}/{{project.slug}}/{{artBoard.id}}/inspect" ng-click="dashboardVm.project.selectArtBoard(artBoard)">
+                  <a ui-sref="dashboard({id: project.id, slug: project.slug, artboardId: artBoard.id})" ng-click="dashboardVm.project.selectArtBoard(artBoard)">
                     <img
                       class="thumbnail"
                       ng-class="{'is-active': artBoard.objectId === dashboardVm.selectedArtBoard.obj.objectId}"
@@ -516,7 +516,7 @@
                       <ul class="exportable">
                         <li ng-repeat="exportable in dashboardVm.selectedArtBoard.selectedLayer.exportable">
                           <a href="assets/{{exportable.path}}" data-format="exportable.format">
-                            <img src="assets/{{exportable.path}}" alt="assets/{{exportable.path}}">assets/{{exportable.path}}</a>
+                            <img ng-src="assets/{{exportable.path}}" alt="assets/{{exportable.path}}">assets/{{exportable.path}}</a>
                           </li>
                         </ul>
                     </div>
