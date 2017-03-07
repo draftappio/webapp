@@ -1,14 +1,18 @@
 <div class="team-members-settings partial__content">
   <form class="invite-form">
-    <legend>Select project</legend>
     <div class="row">
       <div class="column large-4 head-filters">
-        <div class="select-wrapper">
-          <select id="project" ng-model="activeProjet" ng-change="setSelectedProject()">
-            <option value="">Select Project</option>
-            <option ng-repeat="project in projects" value="{{project.slug}}" data-id="{{project.id}}">{{project.name}}</option>
-          </select>
-        </div>
+        <dropdown-toggle pane-align="left" close-on-click="true">
+          <toggle>
+            <button class="select" onclick="return false;">{{selectedProject.name || 'Select Project'}}</button>
+          </toggle>
+          <pane>
+            <ul class="menu vertical">
+              <li class="title">Select Project</li>
+              <li ng-repeat="project in projects"><a ng-click="setSelectedProject(project); this.$close();">{{project.name}}</a></li>
+            </ul>
+          </pane>
+        </dropdown-toggle>
       </div>
     </div>
   </form>
@@ -25,14 +29,24 @@
         <div class="column large-3">
           <input class="form-control" id="last_name" type="text" placeholder="Last Name" ng-model="member.lastname" required />
         </div>
-        <div class="column large-3 head-filters">
-          <div class="select-wrapper">
-            <select required ng-model="member.role">
-              <option value="">Role</option>
-              <option value="0">User</option>
-              <option value="1">Admin</option>
-            </select>
-          </div>
+        <div class="column large-2 head-filters">
+          <dropdown-toggle pane-align="left" close-on-click="true">
+            <toggle>
+              <button class="select" onclick="return false;">{{member.roleName || 'Role'}}</button>
+            </toggle>
+            <pane>
+              <ul class="menu vertical">
+                <li class="title">Role</li>
+                <li><a ng-click="selectMemberRole(member, 0); this.$close();">Member</a></li>
+                <li><a ng-click="selectMemberRole(member, 1); this.$close();">Admin</a></li>
+              </ul>
+            </pane>
+          </dropdown-toggle>
+        </div>
+        <div class="column large-1 team-member__actions">
+          <button class="team-member__delete" onclick="return false;" ng-click="removeUnsavedMember($index)">
+            <div class="icon ion-close-circled"></div>
+          </button>
         </div>
       </div>
       <div class="row form-group">
@@ -43,7 +57,7 @@
       </div>
     </fieldset>
   </form>
-  <form class="management-form">
+  <form class="management-form" ng-if="selectedProject">
     <fieldset>
       <legend>Manage Team Members</legend>
       <div class="form-group team-member" ng-repeat="member in selectedProject.team.users" ng-if="checkIfAdmin()">
@@ -52,10 +66,11 @@
             <img class="avatar" ng-if="member.image!==null" alt="{{member.name}}" ng-src="{{::(member.image)}}" />
             <img class="avatar" ng-if="member.image===null" alt="{{member.name}}" gravatar-src="member.email" ng-fallback="images/user-avatar.png" />
           </div><span class="team-member__name">{{member.name}}</span>
+          <small class="u-padding" title="Pending accept" ng-if="member.pending"><i>pending</i></small>
         </div><span class="team-member__email">{{member.email}}</span>
         <div ng-if="member.role === 1" class="team-member__actions"><span class="team-member__role team-member__role--admin">
           <div class="icon ion-checkmark-circled"></div>Admin</span>
-          <button class="team-member__delete">
+          <button class="team-member__delete" ng-click="openModal('app/partials/remove-member.html', {email: member.email, name: member.name})">
             <div class="icon ion-close-circled"></div>
           </button>
         </div>

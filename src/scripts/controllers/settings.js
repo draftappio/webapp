@@ -62,7 +62,8 @@
         firstname: '',
         lastname: '',
         email: '',
-        role: ''
+        role: 0,
+        roleName: 'Member'
       }
     ];
 
@@ -72,11 +73,21 @@
           firstname: '',
           lastname: '',
           email: '',
-          role: ''
+          role: 0,
+          roleName: 'Member'
         }
       );
     };
 
+    $scope.removeUnsavedMember = function(index) {
+      if($scope.members.length === 1) return;
+      $scope.members.splice(index, 1);
+    };
+
+    $scope.selectMemberRole = function(member, role) {
+      member.role = role;
+      member.roleName = role? 'Admin' : 'Member';
+    };
     var init = function() {
       projectService.getProjects()
       .then(function(projects) {
@@ -87,20 +98,19 @@
     }
 
     $scope.inviteMembers = function() {
-      // TODO: Should find a cleaner way to do this
-      var $project = $('#project');
-      if($project.val() === "") {
+      if(!$scope.selectedProject) {
         toastr.error('Please select project');
         return;
       }
       start();
+
       var project = {
         "project" : {
-          "slug": $project.val(),
+          "slug": $scope.selectedProject.slug,
           "users" : $scope.members
         }
       };
-      projectService.addTeamMember($project.data('id'), project)
+      projectService.addTeamMember($scope.selectedProject.id, project)
       .then(function(data) {
         end();
         $scope.members = [
@@ -108,21 +118,20 @@
             firstname: '',
             lastname: '',
             email: '',
-            role: ''
+            role: 0,
+            roleName: 'Member'
           }
         ];
         toastr.success('Members invited successfully');
+        $scope.selectedProject.team = data.team;
       }, function() {
         end();
         // console.log('Server did not send project data!');
       });
     }
 
-    $scope.projectToManage = "";
-    $scope.setSelectedProject = function() {
-      // TODO: Should find a cleaner way to do this
-      var $project = $('#project')
-      $scope.selectedProject = _.findWhere($scope.projects, {slug: $project.val()})
+    $scope.setSelectedProject = function(project) {
+      $scope.selectedProject = project;
     }
 
     $scope.openModal = function(template, parameters) {
@@ -167,7 +176,7 @@
       .then(function(data) {
         toastr.success('Member removed from your team successfully');
         $scope.modal.close();
-        $scope.selectedProject = data;
+        $scope.selectedProject.team = data.team;
       }, function(data) {
         $scope.modal.close();
         // console.log('Server did not send project data!');
@@ -175,13 +184,9 @@
     }
 
     $scope.checkIfAdmin = function() {
-      var $project = $('#project');
-      var activeProject = _.findWhere($scope.projects, {slug: $project.val()});
-      var admin = _.findWhere(activeProject.team.users, {email: $scope.$parent.user.email, role: 1});
-      if(admin) {
-        return true;
-      }
-      return false;
+      if(!$scope.selectedProject) return;
+      var isAdmin = _.any($scope.selectedProject.team.users, {email: $scope.user.email, role: 1});
+      return isAdmin;
     }
 
     function start() {
