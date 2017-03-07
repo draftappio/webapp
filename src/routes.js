@@ -64,6 +64,13 @@ function routesConfig($stateProvider, $urlRouterProvider, $locationProvider, ENV
       controllerAs: "registerVM",
       parent: "not-authed"
     })
+    .state("accept-invitation", {
+      url: "/auth/invitation/accept?invitation_token",
+      templateUrl: "app/accept-invitation.html",
+      controller: "AcceptInvitaitionCtrl",
+      controllerAs: "acceptInvitaitionVM",
+      parent: "not-authed"
+    })
     .state("create-project", {
       url: "/create-project",
       templateUrl: "app/create-project.html",

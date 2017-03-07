@@ -1,0 +1,48 @@
+<div class="svg-icons"><ng-include src="'images/svg-defs.svg'"></ng-include></div>
+<div class="sign">
+  <img class="full-logo" src="images/draft-logo.svg" alt="Draft">
+  <div class="row align-center">
+    <div class="column large-6 medium-7">
+      <div class="row collapse u-space-v">
+        <div class="column">
+          <div class="card card--shadowed text-center">
+            <div class="card__body">
+              <div class="row collapse align-center is-collapse-child">
+                <div class="column medium-10">
+                  <h4 class="u-space-v">Set your password</h4>
+
+                  <div class="callout alert text-left" ng-if="acceptInvitaitionVM.errors.length">
+                    <ul>
+                      <li ng-repeat="error in acceptInvitaitionVM.errors">{{error}}</li>
+                    </ul>
+                  </div>
+
+                  <form ng-submit="acceptInvitaitionVM.submit()">
+                    <fieldset ng-disabled="acceptInvitaitionVM.loading">
+                      <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="{{passwordField}}" placeholder="Password" id="password" ng-model="acceptInvitaitionVM.form.password" required>
+                        <a class="show-password" ng-mousedown="passwordField = 'text'" ng-mouseup="passwordField = 'password'">
+                          <svg><use xlink:href="#shape-eye" /></svg>
+                        </a>
+                      </div>
+                      <div class="form-group">
+                        <label for="password_confirmation">Confirm Password</label>
+                        <input type="{{passwordField}}" placeholder="Confirm Password" id="password_confirmation" ng-model="acceptInvitaitionVM.form.password_confirmation" required>
+                        <a class="show-password" ng-mousedown="passwordField = 'text'" ng-mouseup="passwordField = 'password'">
+                          <svg><use xlink:href="#shape-eye" /></svg>
+                        </a>
+                      </div>
+
+                      <button type="submit" class="button expanded success" ng-disabled="acceptInvitaitionVM.loading">Set my password</button>
+                    </fieldset>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
