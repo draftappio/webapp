@@ -3,7 +3,7 @@
     .module("app")
     .controller("SettingsCtrl", SettingsCtrl);
 
-  function SettingsCtrl($scope, $auth, $stateParams, $modal, toastrConfig, toastr, projectService, settingsService) {
+  function SettingsCtrl($scope, $auth, $stateParams, $modal, toastrConfig, toastr, projectService, settingsService, Upload, ENV) {
 
     angular.extend(toastrConfig, {
       target: '.canvas-screen-viewer'
@@ -14,10 +14,6 @@
     $scope.menu = "settings";
     $scope.tab = $stateParams.param;
     $scope.user = $scope.$parent.user;
-    $scope.updateAccountForm = {
-      name: $scope.$parent.user.name,
-      email: $scope.$parent.user.email
-    }
 
     settingsService.getNotificationsSettings($scope.$parent.user.id)
     .then(function(settings) {
@@ -26,14 +22,65 @@
       // console.log('Server did not send project data!');
     });
 
-    $scope.updateAccount = function() {
-      $auth.updateAccount($scope.updateAccountForm)
-        .then(function(resp) {
-          console.log(resp);
-          // handle success response
+    $scope.profile = {
+      form: {
+        firstname: $scope.user.firstname,
+        lastname: $scope.user.lastname,
+        email: $scope.user.email
+      }
+    };
+
+    $scope.profile.uploadAvatar = function(file) {
+      if(!file) return;
+      start();
+      $scope.profile.isUploadingAvatar = true;
+      Upload.upload({
+        url: ENV.api + 'profile/update_avatar',
+        method: 'POST',
+        headers: $auth.retrieveData('auth_headers'),
+        data: { avatar: file }
+      }).success(function(data) {
+        $scope.user.image = data.avatar_url;
+        $scope.profile.isUploadingAvatar = false;
+        toastr.success('Your avatar has been updated successfully!');
+        end();
+      }).error(function(data) {
+        $scope.profile.isUploadingAvatar = false;
+        toastr.error('Failed to update your avatar!');
+        end();
+      });
+    };
+
+    $scope.profile.removeAvatar = function() {
+      start();
+      $auth.updateAccount({ image: null})
+        .then(function(response) {
+          $scope.user.image = null;
+          toastr.success('Your avatar has been removed successfully!');
+          end();
         })
-        .catch(function(resp) {
-          // handle error response
+        .catch(function(err) {
+          const errors = err.errors || err.data.errors;
+          $scope.profile.errors = errors;
+          end();
+        });
+    };
+
+    $scope.profile.update = function() {
+      // Don't send password if it is blank
+      if ($scope.profile.form.password === '') delete $scope.profile.form.password;
+      $scope.profile.errors = {};
+      $auth.updateAccount($scope.profile.form)
+        .then(function(response) {
+          const updatedUser = response.data.data;
+          $scope.user.firstname = updatedUser.firstname;
+          $scope.user.lastname = updatedUser.lastname;
+          $scope.user.email = updatedUser.email;
+          toastr.success('Your profile has been updated successfully!');
+        })
+        .catch(function(err) {
+          const errors = err.errors || err.data.errors;
+          $scope.profile.errors = errors;
         });
     };
 

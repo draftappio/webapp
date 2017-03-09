@@ -1,30 +1,45 @@
 
 <div class="profile-settings partial__content">
   <div class="row">
-    <form class="text-left column large-6 large-offset-3" ng-submit="updateAccount(updateAccountForm)">
+    <form class="text-left column large-6 large-offset-3" ng-submit="profile.update()">
       <fieldset ng-disabled="settingsVM.loading">
         <div class="form-group text-center">
           <div class="avatar-card">
-            <div class="avatar-card__img-wrapper"><img class="avatar" ng-src="{{user.image}}"/>
-              <input type="file" name="avatar"/>
+            <div class="avatar-card__img-wrapper">
+              <img class="avatar" ng-src="{{user.image}}" ng-if="user.image"/>
+              <img class="avatar" ng-if="!user.image" gravatar-src="user.email" ng-fallback="/images/original/missing.png" />
+              <div class="u-padding-v" ng-show="profile.isUploadingAvatar">
+                Uploading image, please wait...
+              </div>
             </div>
             <div class="avatar-card__actions clearfix">
-              <button class="avatar-card__change" type="button">Change</button>
-              <button class="avatar-card__delete" type="button"><i class="icon ion-close-round"></i>Delete</button>
+              <button class="avatar-card__change" ngf-accept="'image/*'" ngf-max-size="5MB" type="button" ngf-select="profile.uploadAvatar($file)" ng-disabled="settingsVM.loading">Change</button>
+              <button class="avatar-card__delete" type="button" ng-disabled="settingsVM.loading" ng-click="profile.removeAvatar()"><i class="icon ion-close-round"></i>Delete</button>
             </div>
           </div>
         </div>
         <div class="form-group">
           <label for="name">Your Name</label>
-          <input class="form-control" id="name" autofocus="" type="text" placeholder="Your Name" ng-model="updateAccountForm.name" required />
+          <div class="row u-padding-v">
+            <div class="columns large-6">
+              <input autofocus class="form-control" type="text" placeholder="First name" ng-model="profile.form.firstname" required ng-class="{'is-invalid-input': profile.errors.firstname[0]}">
+              <span class="form-error" ng-class="{'is-visible': profile.errors.firstname[0]}" >First Name {{profile.errors.firstname[0]}}</span>
+            </div>
+            <div class="columns large-6">
+              <input class="form-control" type="text" placeholder="Last name" ng-model="profile.form.lastname" required ng-class="{'is-invalid-input': profile.errors.lastname[0]}">
+              <span class="form-error" ng-class="{'is-visible': profile.errors.lastname[0]}" >Last Name {{profile.errors.lastname[0]}}</span>
+            </div>
+          </div>
         </div>
         <div class="form-group">
           <label for="email">Your Email</label>
-          <input class="form-control" id="email" type="email" placeholder="Your Email" ng-model="updateAccountForm.email" required />
+          <input class="form-control" type="text" placeholder="Email Address" ng-model="profile.form.email" required ng-class="{'is-invalid-input': profile.errors.email[0]}">
+          <span class="form-error" ng-class="{'is-visible': profile.errors.email[0]}" >Email {{profile.errors.email[0]}}</span>
         </div>
         <div class="form-group u-space-v-large">
-          <label for="new-password">Change Password</label>
-          <input class="form-control" id="new-password" type="password" placeholder="Enter New Password" ng-model="settingsVM.form.password" ng-class="{'is-invalid-input': settingsVM.errors.password[0]}"/><span class="form-error" ng-class="{'is-visible': settingsVM.errors.password[0]}">Password {{settingsVM.errors.password[0]}}</span>
+          <label for="new-password">New Password</label>
+          <input class="form-control" type="password" placeholder="Enter New Password" ng-model="profile.form.password" ng-class="{'is-invalid-input': profile.errors.password[0]}"/><span class="form-error" ng-class="{'is-visible': profile.errors.password[0]}">New Password {{profile.errors.password[0]}}</span>
+          <small><i>Leave blank if you don't want to change it</i></small>
         </div>
         <button class="button expanded success" type="submit" ng-disabled="settingsVM.loading">Save</button>
       </fieldset>
