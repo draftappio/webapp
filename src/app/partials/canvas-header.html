@@ -66,12 +66,7 @@
                   <div class="tags">
                     <a ng-repeat="tag in currentArtboard.tags" style="background: {{tag.color}}">{{tag.name}} <span ng-click="deleteTag(tag.id, $event)">&times;</span></a>
                   </div>
-                  <div class="input-wrapper">
-                    <div class="selected-color" style="background: {{tagColor}}"></div>
-                    <input type="text" ng-model="newTag" placeholder="# Add Tag">
-                    <input type="color" ng-model="tagColor">
-                  </div>
-                  <a ng-click="addTag(newTag, tagColor)" class="action-button">Add Tag</a>
+                  <taggable taggable-id="{{currentArtboard.id}}" taggable-type="Artboard" on-tag-added="onTagAdded()"></taggable>
                 </li>
               </ul>
             </pane>

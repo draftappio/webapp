@@ -46,12 +46,7 @@
                   <pane>
                     <ul class="dd-menu">
                       <li>
-                        <div class="input-wrapper">
-                          <div class="selected-color" style="background: {{tagColor}}"></div>
-                          <input type="text" ng-model="newTag" placeholder="# Add Tag">
-                          <input type="color" ng-model="tagColor">
-                        </div>
-                        <a ng-click="addTag(newTag, tagColor)" class="action-button">Add Tag</a>
+                        <taggable taggable-id="{{project.id}}" taggable-type="Project" on-tag-added="onTagAdded(this)"></taggable>
                       </li>
                     </ul>
                   </pane>

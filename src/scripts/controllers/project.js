@@ -19,7 +19,6 @@
 
     $scope.menu = "projects-activities";
     $scope.status = ["New", "In Progress", "Approved"];
-    $scope.tagColor = "#4f8ff7";
 
     $scope.project = {
       id: $stateParams.id,
@@ -213,34 +212,18 @@
       });
     };
 
-    $scope.addTag = function(tag, color) {
-      var toggler = $('dropdown-toggle.tags-dropdown')
-      // toggler.addClass('disabled');
-      this.$close();
-      var tagDetails = {
-        "taggable_id" : parseInt($stateParams.id),
-        "taggable_type": "Project",
-        "tag": {
-          "name": tag,
-          "color": color
-        }
-      };
-      tagsService.createTag(tagDetails)
+    $scope.onTagAdded = function(pane) {
+      var toggler = $("dropdown-toggle.tags-dropdown");
+      projectCache.remove(projectCacheKey);
+      tagsService.getTags($stateParams.id, "Project")
       .then(function(data) {
-        toastr.success('Well Done! Project tags updated');
-        projectCache.remove(projectCacheKey);
-        tagsService.getTags($stateParams.id, "Project")
-        .then(function(data) {
-          toggler.removeClass('disabled');
-          $scope.project.tags = data;
-        }, function() {
-          toggler.removeClass('disabled');
-          // console.log('Server did not send project data!');
-        });
+        toggler.removeClass("disabled");
+        $scope.project.tags = data;
       }, function() {
-        toggler.removeClass('disabled');
+        toggler.removeClass("disabled");
         // console.log('Server did not send project data!');
       });
+      pane.$close();
     }
 
     $scope.deleteTag = function(id, $event) {

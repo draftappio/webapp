@@ -25,8 +25,6 @@
     projectCache = CacheFactory.get('projectCache');
 
     $scope.artboardStatusesClasses = ['danger', 'warning', 'success'];
-    $scope.tagColor = "#4f8ff7";
-    $scope.newTag = "";
 
     var info = {
       id: $stateParams.id,
@@ -88,33 +86,15 @@
         });
     };
 
-    $scope.addTag = function(tag, color) {
-      var toggler = $('dropdown-toggle.tags-dropdown')
-      // toggler.addClass('disabled');
-      //this.$close();
-      var tagDetails = {
-        "taggable_id" : parseInt($stateParams.artboardId),
-        "taggable_type": "Artboard",
-        "tag": {
-          "name": tag,
-          "color": color
-        }
-      };
-      tagsService.createTag(tagDetails)
+    $scope.onTagAdded = function() {
+      var toggler = $("dropdown-toggle.tags-dropdown");
+      projectCache.remove(projectCacheKey);
+      tagsService.getTags($stateParams.artboardId, "Artboard")
       .then(function(data) {
-        toastr.success('Well Done! Artboard tags updated');
-        projectCache.remove(projectCacheKey);
-        tagsService.getTags($stateParams.artboardId, "Artboard")
-        .then(function(data) {
-          toggler.removeClass('disabled');
-          $scope.currentArtboard.tags = data;
-        }, function() {
-          toggler.removeClass('disabled');
-          // console.log('Server did not send project data!');
-        });
+        toggler.removeClass("disabled");
+        $scope.currentArtboard.tags = data;
       }, function() {
-        toggler.removeClass('disabled');
-        // console.log('Server did not send project data!');
+        toggler.removeClass("disabled");
       });
     }
 
